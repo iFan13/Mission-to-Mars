@@ -4,14 +4,10 @@ from bs4 import BeautifulSoup as soup
 from webdriver_manager.chrome import ChromeDriverManager
 import pandas as pd
 import datetime as dt
-import scraping
-
-
 
 def scrape_all():
     # Initiate headless driver for deployment
-    executable_path = {'executable_path': ChromeDriverManager().install()}
-    browser = Browser('chrome', **executable_path, headless=False)
+    browser = Browser('chrome', **{'executable_path': ChromeDriverManager().install()}, headless=False)
     
     news_title, news_paragraph = mars_news(browser)
     # Run all scraping functions and store results in dictionary
