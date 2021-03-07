@@ -102,33 +102,20 @@ def hemisphere_images(browser):
     # Create a list to hold the images and titles.
     hemisphere_image_urls = []
 
-    # Retrieve the image urls and titles for each hemisphere.
-    html=browser.html
-    img_soup=soup(html, 'html.parser')
-
     try:
-        for product in range(0, len(browser.find_by_css('a.product-item h3'))):
-            # get title
-            title = browser.find_by_css('a.product-item h3')[product].text
-            # go to site
-            browser.find_by_css('a.product-item h3')[product].click()
-            specific_page=soup(browser.html,'html.parser')
-            # find links to images
-            all_links = specific_page.find('div', class_='downloads').find_all('a')
-            # find jpg only
-            for each in all_links:
-                if '.jpg' in each.get('href'):
-                    hemisphere_image_urls.append(
-                        {
-                        'img_url':each.get('href'),
-                        'title':title
-                        }
-                    )
+        for each in range(len(browser.find_by_css('a.product-item h3'))):
+            browser.find_by_css('a.product-item h3')[each].click()
+            hemisphere_image_urls.append(
+                {
+                'img_url':soup(browser.html,'html.parser').find('a', text="Sample").get('href'),
+                'title':soup(browser.html,'html.parser').find('h2', class_='title').get_text()
+                }
+            )
             browser.back()
-
     except BaseException:
-        print("Debug Error: BaseException")
+        print('error in try; base exception')
         return None
+
     return hemisphere_image_urls
 
 if __name__ == "__main__":
