@@ -94,10 +94,6 @@ def mars_facts():
     # Convert dataframe into HTML format, add bootstrap
     return df.to_html(classes="table table-striped")
 
-if __name__ == "__main__":
-    # If running as script, print scraped data
-    print(scrape_all())
-
 def hemisphere_images(browser):
     # Use browser to visit the URL 
     url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
@@ -111,23 +107,26 @@ def hemisphere_images(browser):
     html=browser.html
     img_soup=soup(html, 'html.parser')
 
-    titles=[]
-    for product in img_soup.find_all('div', class_="description"):
-        titles.append(product.find('h3').get_text())
-
-    for product in img_soup.find_all('div', class_='item'):
-        hreflink = product.find('a', class_='itemLink product-item').get('href')
-        title = product.find()
-        browser.visit(url_base+hreflink)
+    for product in range(0, len(browser.find_by_css('a.product-item h3'))):
+        # get title
+        title = browser.find_by_css('a.product-item h3')[product].text
+        # go to site
+        browser.find_by_css('a.product-item h3')[product].click()
         specific_page=soup(browser.html,'html.parser')
+        # find links to images
         all_links = specific_page.find('div', class_='downloads').find_all('a')
+        # find jpg only
         for each in all_links:
             if '.jpg' in each.get('href'):
                 hemisphere_image_urls.append(
                     {
                     'img_url':each.get('href'),
-                    'title':titles[img_soup.find_all('div', class_='item').index(product)]
+                    'title':title
                     }
                 )
         browser.back()
     return hemisphere_image_urls
+
+if __name__ == "__main__":
+    # If running as script, print scraped data
+    print(scrape_all())
