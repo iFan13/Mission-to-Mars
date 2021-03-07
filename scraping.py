@@ -16,7 +16,8 @@ def scrape_all():
       "news_paragraph": news_paragraph,
       "featured_image": featured_image(browser),
       "facts": mars_facts(),
-      "last_modified": dt.datetime.now()
+      "last_modified": dt.datetime.now(),
+      "hemispheres": hemisphere_images(browser)
     }
 
     # Stop webdriver and return data
@@ -96,3 +97,37 @@ def mars_facts():
 if __name__ == "__main__":
     # If running as script, print scraped data
     print(scrape_all())
+
+def hemisphere_images(browser):
+    # Use browser to visit the URL 
+    url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
+    url_base = 'https://astrogeology.usgs.gov'
+    browser.visit(url)
+    
+    # Create a list to hold the images and titles.
+    hemisphere_image_urls = []
+
+    # Retrieve the image urls and titles for each hemisphere.
+    html=browser.html
+    img_soup=soup(html, 'html.parser')
+
+    titles=[]
+    for product in img_soup.find_all('div', class_="description"):
+        titles.append(product.find('h3').get_text())
+
+    for product in img_soup.find_all('div', class_='item'):
+        hreflink = product.find('a', class_='itemLink product-item').get('href')
+        title = product.find()
+        browser.visit(url_base+hreflink)
+        specific_page=soup(browser.html,'html.parser')
+        all_links = specific_page.find('div', class_='downloads').find_all('a')
+        for each in all_links:
+            if '.jpg' in each.get('href'):
+                hemisphere_image_urls.append(
+                    {
+                    'img_url':each.get('href'),
+                    'title':titles[img_soup.find_all('div', class_='item').index(product)]
+                    }
+                )
+        browser.back()
+    return hemisphere_image_urls
